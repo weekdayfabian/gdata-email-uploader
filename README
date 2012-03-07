@@ -1,0 +1,8 @@
+the ugliest google apps email uploader
+
+reads creds.conf for your credentials
+
+creds.conf looks like this:
+username: 'test@yourdomain.com'
+password: 'password123'
+domain:   'yourdomain.com'
