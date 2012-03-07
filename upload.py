@@ -4,9 +4,6 @@ import multiprocessing,Queue,time,os,sys,json,mailbox,getopt,getpass,datetime
 from mailbox import Maildir
 from gdata.apps.migration import service
 from gdata.apps.service import AppsForYourDomainException
-from config import Config
-
-password = getpass.getpass()
 
 # configuration
 # Base directory for MailDir structure
@@ -14,10 +11,10 @@ password = getpass.getpass()
 baseMailDir = "/var/vmail/"
 # where are we storing the mboxes
 mboxes = "mboxes/"
-# google credentials
-googleCreds =  ('fabian@thefreshdiet.com', # user
-                password, # password
-                'thefreshdiet.com') # domain
+# config file
+creds = "creds.conf"
+# logdir
+logdir = "log/"
 # logfile
 log = "manual-"+str(int(time.time()))+".log"
 # parallel processes
@@ -27,8 +24,20 @@ debug = 0
 # when did we start
 started = datetime.datetime.now()
 
+def parseConfig():
+    conf = {}
+    for line in file(creds):
+        vals = line.split('=')
+        if len(vals) != 2:
+            print "error in conf file syntax"
+            print line
+        else:
+            key, val = vals
+            conf[key.strip()] = val.strip()
+    return conf
+
 def usage():
-    print "usage: %s [-t threads] -u <gmail user> -e <currentemail@domain>" % (sys.argv[0])
+    print "usage: %s [-v] [-t threads] -u <gmail user> -e <currentemail@domain>" % (sys.argv[0])
     exit(1)
 
 class LogWorker(multiprocessing.Process):
@@ -36,7 +45,7 @@ class LogWorker(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.logQueue = logQueue
         self.kill_received = False
-        self.logfile = open(log, "w")
+        self.logfile = open(logdir+log, "w")
     def run(self):
         while not self.kill_received:
             try:
@@ -95,10 +104,12 @@ class EmailWorker(multiprocessing.Process):
         self.kill_received = False
         
         # log into google
-        self.migServ = service.MigrationService(email=googleCreds[0], password=googleCreds[1], 
-                domain=googleCreds[2], source='fabian-migration-0.2')
+        self.migServ = service.MigrationService(email=self.googleCreds["username"], 
+                password=self.googleCreds["password"], 
+                domain=self.googleCreds["domain"], 
+                source='fabian-manualmigration-0.2')
         self.migServ.ProgrammaticLogin()
-        self.log("logged in as " + googleCreds[0])
+        self.log("logged in as " + googleCreds["username"])
 
     def run(self):
         # should wait for things in the queue
@@ -193,11 +204,23 @@ if __name__ == "__main__":
             EMAIL = a
         elif o == "-t":
             procs = str(a)
+        elif o == "-v":
+            debug = 1
             
     if not USER or not EMAIL:
         print "missing user or email param"
         usage()
         
+    config = parseConfig()
+    if "domain" not in config:
+        print "error: no domain in config"
+        exit(1)
+    if "username" not in config:
+        print "error: no username in config"
+        exit(1)
+    if "password" not in config:
+        config["password"] = getpass.getpass()
+
     exit()
             
     luser, domain = EMAIL.split("@")
@@ -211,7 +234,7 @@ if __name__ == "__main__":
     # spawn email workers
     workers = []
     for i in range(procs):
-        worker = EmailWorker(googleCreds, workQueue, logQueue, errorQueue)
+        worker = EmailWorker(config, workQueue, logQueue, errorQueue)
         workers.append(worker)
         worker.start()
         
