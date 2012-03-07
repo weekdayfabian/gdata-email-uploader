@@ -1,5 +1,4 @@
 creds.conf
 log/*
-!.gitignore
-vmail/*
+mboxes/*
 !.gitignore

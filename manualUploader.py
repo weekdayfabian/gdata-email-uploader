@@ -4,6 +4,7 @@ import multiprocessing,Queue,time,os,sys,json,mailbox,getopt,getpass,datetime
 from mailbox import Maildir
 from gdata.apps.migration import service
 from gdata.apps.service import AppsForYourDomainException
+from config import Config
 
 password = getpass.getpass()
 
