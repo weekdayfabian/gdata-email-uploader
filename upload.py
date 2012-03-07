@@ -203,7 +203,7 @@ if __name__ == "__main__":
         elif o == "-e":
             EMAIL = a
         elif o == "-t":
-            procs = str(a)
+            procs = int(a)
         elif o == "-v":
             debug = 1
             
@@ -220,8 +220,6 @@ if __name__ == "__main__":
         exit(1)
     if "password" not in config:
         config["password"] = getpass.getpass()
-
-    exit()
             
     luser, domain = EMAIL.split("@")
     
@@ -229,8 +227,8 @@ if __name__ == "__main__":
     
     workQueue = multiprocessing.Queue()
     logQueue = multiprocessing.Queue()
-    errorQueue = multiprocessing.Queue()
-    
+    errorQueue = multiprocessing.Queue() 
+
     # spawn email workers
     workers = []
     for i in range(procs):
@@ -258,9 +256,9 @@ if __name__ == "__main__":
             # Process emails here.
             email = (domain,USER,folder,eid,msg.get_flags(),str(msg))
             workQueue.put(email)
-            break
         while not workQueue.empty():
-            print "workQueue: " + folder + " " + str(workQueue.qsize())
+            if debug:
+                print "workQueue: " + folder + " " + str(workQueue.qsize())
             time.sleep(60)
 
     # kill ALL the threads!
@@ -271,4 +269,3 @@ if __name__ == "__main__":
     
     print time.ctime(), "FINISHED all emails"
     print "elapsed time:", datetime.datetime.now() - started
-    exit()
