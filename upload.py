@@ -187,7 +187,7 @@ if __name__ == "__main__":
         usage()
         
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "u:e:t:h", ["help"])
+        opts, args = getopt.getopt(sys.argv[1:], "u:e:t:hv", ["help"])
     except getopt.GetoptError, err:
         print str(err)
         usage()
