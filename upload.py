@@ -63,7 +63,7 @@ class LogWorker(multiprocessing.Process):
         self.kill_received = True
 
 class MboxWorker(multiprocessing.Process):
-    def __init__(self, errorQueue, logQueue):
+    def __init__(self, errorQueue, logQueue, luser):
         multiprocessing.Process.__init__(self)
         self.errorQueue = errorQueue
         self.logQueue = logQueue
@@ -75,9 +75,9 @@ class MboxWorker(multiprocessing.Process):
                 reason = msg[0]
                 email = msg[1]
                 if email[2] == '':
-                    mboxFile = email[1]+"@"+email[0]+"-"+ str(reason) +".mbox"
+                    mboxFile = luser+"-"+email[1]+"@"+email[0]+"-"+ str(reason) +".mbox"
                 else:
-                    mboxFile = email[1]+"@"+email[0]+"-"+email[2]+"-"+ str(reason) +".mbox"
+                    mboxFile = luser+"-"+email[1]+"@"+email[0]+"-"+email[2]+"-"+ str(reason) +".mbox"
                 dest = mailbox.mbox(mboxes+mboxFile)
                 dest.lock()
                 dest.add(mailbox.mboxMessage(email[5]))
@@ -91,7 +91,6 @@ class MboxWorker(multiprocessing.Process):
     def log(self, message):
         print message
     def die(self):
-        print "."
         self.kill_received = True
                 
 class EmailWorker(multiprocessing.Process):
@@ -165,7 +164,7 @@ class EmailWorker(multiprocessing.Process):
                 mail_item_properties=mailProperties,
                 mail_labels=mailLabels)
         except AppsForYourDomainException, e:
-            err = json.loads(str(e).replace('"',"@").replace("'",'"').replace("@",'"'))
+            err = json.loads(str(e).replace('"',"__@__").replace("'",'"').replace("__@__",'"'))
             if err['status'] != 503:
                 self.log(str(e).replace("'",'"') + email[3])
             return err['status']
@@ -239,7 +238,7 @@ if __name__ == "__main__":
     # spawn log and email writing workers
     logger = LogWorker(logQueue)
     logger.start()
-    mboxer = MboxWorker(errorQueue, logQueue)
+    mboxer = MboxWorker(errorQueue, logQueue, luser)
     mboxer.start()
     
     # load workQueue
@@ -260,6 +259,8 @@ if __name__ == "__main__":
             if debug:
                 print "workQueue: " + folder + " " + str(workQueue.qsize())
             time.sleep(60)
+
+    logger.put("elapsed time:" + str(datetime.datetime.now() - started))
 
     # kill ALL the threads!
     for worker in workers:
