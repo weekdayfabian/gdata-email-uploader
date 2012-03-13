@@ -7,7 +7,7 @@ upload.py: usage: upload.py [-v] [-t threads] -u <gmail user> -e <currentemail@d
 * -u user	gmail user we're uploading to
 * -e em@il.com	email address on our current server
 
-smtpd:
+smtpd: no options
 
 reads creds.conf for your credentials
 
