@@ -1,4 +1,5 @@
 creds.conf
+smtpd/relay.conf
 log/*
 mboxes/*
 !.gitignore

@@ -1,0 +1,35 @@
+#!/usr/bin/python
+# DO NOT name this file smtpd.py
+
+# allowed relay domain conf file
+relayconf = "relay.conf"
+
+fp = open(relayconf)
+allowed_relay = fp.read().split()
+fp.close()
+
+import smtpd, asyncore, smtplib
+from email.parser import Parser
+
+class CustomSMTPServer(smtpd.SMTPServer):
+    
+    def process_message(self, peer, mailfrom, rcpttos, data):
+	msg = Parser().parsestr(data)
+	mailto = msg['to'].split(",")
+	if msg['cc'] is not None:
+		for recipient in msg['cc'].split(","):
+			mailto.append(recipient)
+	relay = []
+	for address in mailto:
+		print address.split("@")[1].replace(">","")
+		if address.split("@")[1].replace(">","") in allow_relay:
+			relay.append(address)
+	server =  smtplib.SMTP(self._remoteaddr)
+	#server.set_debuglevel(1)
+	server.sendmail(mailfrom,relay,data)
+	server.quit()
+        return
+
+server = CustomSMTPServer(('127.0.0.1', 2500), 'ASPMX.L.GOOGLE.com')
+
+asyncore.loop()
