@@ -20,7 +20,7 @@ creds.conf looks like this:
 
 smtpd.conf looks like this:
 
-firstdomain.org
+    firstdomain.org
     seconddomain.net
     thirddomain.edu
 
