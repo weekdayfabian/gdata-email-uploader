@@ -1,11 +1,11 @@
 the ugliest google apps email uploader
+--------------------------------------
 
 upload.py: usage: upload.py [-v] [-t threads] -u <gmail user> -e <currentemail@domain>
-
-    * -v 		verbose mode
-    * -t x		number of threads (default: 5)
-    * -u user	gmail user we're uploading to
-    * -e em@il.com	email address on our current server
+* -v 		    verbose mode
+* -t x		    number of threads (default: 5)
+* -u user	    gmail user we're uploading to
+* -e em@il.com	email address on our current server
 
 smtpd: no options
 
