@@ -21,14 +21,15 @@ class CustomSMTPServer(smtpd.SMTPServer):
 			mailto.append(recipient)
 	relay = []
 	for address in mailto:
-		print address.split("@")[1].replace(">","")
+		print address
 		if address.split("@")[1].replace(">","") in allow_relay:
 			relay.append(address)
-	server =  smtplib.SMTP(self._remoteaddr)
-	#server.set_debuglevel(1)
-	server.sendmail(mailfrom,relay,data)
-	server.quit()
-        return
+    if (len(relay) > 0):
+        server =  smtplib.SMTP(self._remoteaddr)
+        #server.set_debuglevel(1)
+        server.sendmail(mailfrom,relay,data)
+        server.quit()
+    return
 
 server = CustomSMTPServer(('127.0.0.1', 2500), 'ASPMX.L.GOOGLE.com')
 
