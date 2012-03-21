@@ -5,7 +5,7 @@
 relayconf = "relay.conf"
 
 fp = open(relayconf)
-allowed_relay = fp.read().split()
+allow_relay = fp.read().split()
 fp.close()
 
 import smtpd, asyncore, smtplib
