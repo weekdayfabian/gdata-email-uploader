@@ -25,6 +25,7 @@ class CustomSMTPServer(smtpd.SMTPServer):
             if address.split("@")[1].replace(">","") in allow_relay:
                 relay.append(address)
         if (len(relay) > 0):
+            print relay
             server =  smtplib.SMTP(self._remoteaddr)
             #server.set_debuglevel(1)
             server.sendmail(mailfrom,relay,data)
