@@ -21,7 +21,7 @@ class CustomSMTPServer(smtpd.SMTPServer):
                 mailto.append(recipient)
         relay = []
         for address in mailto:
-            print email.utils.parse_addr(address)
+            print email.utils.parseaddr(address)
             if address.split("@")[1].replace(">","") in allow_relay:
                 relay.append(address)
         if (len(relay) > 0):
