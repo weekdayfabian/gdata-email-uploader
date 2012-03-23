@@ -260,7 +260,7 @@ if __name__ == "__main__":
                 print "workQueue: " + folder + " " + str(workQueue.qsize())
             time.sleep(60)
 
-    logger.put("elapsed time:" + str(datetime.datetime.now() - started))
+    logQueue.put("elapsed time:" + str(datetime.datetime.now() - started))
 
     # kill ALL the threads!
     for worker in workers:
