@@ -3,3 +3,4 @@ smtpd/relay.conf
 log/*
 mboxes/*
 !.gitignore
+gmailusers.txt
